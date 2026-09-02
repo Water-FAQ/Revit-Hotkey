@@ -1,0 +1,29 @@
+name: Сообщить об ошибке
+description: Ошибка или неожиданное поведение Revit Hotkey
+title: "[Ошибка] "
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Версия программы
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Версия Windows и Revit
+      placeholder: Windows 11, Revit 2025
+  - type: textarea
+    id: description
+    attributes:
+      label: Что произошло
+      description: Опишите шаги, ожидаемый и фактический результат.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Дополнительные сведения
+      description: Скриншоты можно приложить сюда. Не публикуйте закрытые XML-файлы.

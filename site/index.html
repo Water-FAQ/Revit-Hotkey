@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Revit Hotkey — бесплатная программа для просмотра и изменения горячих клавиш Autodesk Revit.">
+  <meta name="theme-color" content="#f2f5f9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#181b20" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Revit Hotkey — горячие клавиши Autodesk Revit">
+  <meta property="og:description" content="Поиск команд, сочетания для двух раскладок, проверка конфликтов и безопасное сохранение файла горячих клавиш.">
+  <meta property="og:url" content="https://water-faq.github.io/Revit-Hotkey/">
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="assets/styles.css?v=1">
+  <title>Revit Hotkey — горячие клавиши Autodesk Revit</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap top">
+      <a class="brand" href="#top" aria-label="Revit Hotkey — наверх">
+        <img src="assets/icon.png" width="48" height="48" alt="">
+        <span>Revit Hotkey</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="site-navigation">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <nav id="site-navigation" class="nav" aria-label="Основная навигация">
+        <a href="#features">Возможности</a>
+        <a href="#start">Начало работы</a>
+        <a href="#safety">Сохранение</a>
+        <a href="#questions">Вопросы</a>
+        <a href="https://github.com/Water-FAQ/Revit-Hotkey">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <div class="eyebrow">Бесплатно · Windows · без установки</div>
+      <h1>Горячие клавиши Revit — в понятной таблице</h1>
+      <p class="lead">Найдите нужную команду и назначьте сочетание сразу для английской и русской раскладок.</p>
+      <div class="app-shot"><img src="assets/app-window.png" width="862" height="812" alt="Окно программы Revit Hotkey"></div>
+      <div class="hero-actions">
+        <a class="button" href="https://github.com/Water-FAQ/Revit-Hotkey/releases/latest/download/Revit-Hotkey.zip">Скачать Revit Hotkey</a>
+        <a class="button secondary" href="https://github.com/Water-FAQ/Revit-Hotkey">Исходный код</a>
+      </div>
+      <p class="meta">Актуальная версия: v1.0.0</p>
+    </section>
+
+    <section id="features" class="wrap section">
+      <div class="section-heading"><span>Возможности</span><h2>Всё необходимое для работы с сочетаниями</h2></div>
+      <div class="grid">
+        <article class="card"><h3>Поиск и фильтры</h3><p>Поиск по названию команды и фильтрация по разделам, назначенным и свободным сочетаниям.</p></article>
+        <article class="card"><h3>Две раскладки</h3><p>Программа определяет физические клавиши и формирует соответствующие сочетания EN и RU.</p></article>
+        <article class="card"><h3>Проверка конфликтов</h3><p>Занятое сочетание показывается до сохранения. Его можно заменить осознанно, не редактируя XML вручную.</p></article>
+        <article class="card"><h3>Резервная копия</h3><p>При перезаписи файла Revit исходный XML сохраняется рядом с отметкой даты и времени.</p></article>
+        <article class="card"><h3>Безопасная запись</h3><p>Итоговый файл сначала создаётся и проверяется как временный XML, затем заменяет оригинал.</p></article>
+        <article class="card"><h3>Несколько версий Revit</h3><p>Программа находит пользовательские файлы разных версий Revit и позволяет выбрать нужный.</p></article>
+      </div>
+    </section>
+
+    <section id="start" class="wrap section split">
+      <div>
+        <div class="section-heading"><span>Начало работы</span><h2>Три шага до готового файла</h2></div>
+        <ol class="steps">
+          <li><strong>Скачайте и распакуйте архив.</strong><span>Установка не требуется.</span></li>
+          <li><strong>Запустите Revit Hotkey.</strong><span>Выберите XML вручную или загрузите файл найденной версии Revit.</span></li>
+          <li><strong>Назначьте сочетания и сохраните.</strong><span>После замены файла перезапустите Revit.</span></li>
+        </ol>
+      </div>
+      <aside class="path-card">
+        <span class="path-label">Стандартное расположение</span>
+        <code>%APPDATA%\Autodesk\Revit\<br>Autodesk Revit 20XX\</code>
+        <p>Перед сохранением в файл используемой версии рекомендуется закрыть Revit.</p>
+      </aside>
+    </section>
+
+    <section id="safety" class="safety">
+      <div class="wrap safety-inner">
+        <div><span class="section-kicker">Локальная работа</span><h2>Файл остаётся на вашем компьютере</h2></div>
+        <p>Revit Hotkey не отправляет команды, сочетания или XML-файлы в интернет. Программа работает непосредственно с выбранным локальным файлом.</p>
+      </div>
+    </section>
+
+    <section id="questions" class="wrap section questions">
+      <div class="section-heading"><span>Вопросы</span><h2>Перед первым запуском</h2></div>
+      <details><summary>Какие версии Revit поддерживаются?</summary><p>Программа не использует Revit API и работает с пользовательским файлом горячих клавиш. Автоматический поиск ориентируется на стандартные папки «Autodesk Revit 20XX».</p></details>
+      <details><summary>Нужно ли устанавливать программу?</summary><p>Нет. Распакуйте архив и запустите <code>Revit Hotkey.exe</code>.</p></details>
+      <details><summary>Что будет с исходным XML?</summary><p>При перезаписи стандартного файла Revit рядом создаётся резервная копия. Сохранение выполняется через проверенный временный XML.</p></details>
+      <details><summary>Почему Windows может показать предупреждение?</summary><p>У программы нет цифровой подписи, поэтому Windows может предупредить о запуске приложения от неизвестного издателя.</p></details>
+    </section>
+
+    <section class="wrap final-cta">
+      <div><h2>Назначайте сочетания без ручного редактирования XML</h2><p>Revit Hotkey v1.0.0 · портативная версия для Windows.</p></div>
+      <a class="button" href="https://github.com/Water-FAQ/Revit-Hotkey/releases/latest/download/Revit-Hotkey.zip">Скачать программу</a>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <span>© 2026 WaterFAQ · Revit Hotkey распространяется бесплатно</span>
+    <nav><a href="https://github.com/Water-FAQ/Revit-Hotkey/issues">Обратная связь</a><a href="https://github.com/Water-FAQ/Revit-Hotkey">GitHub</a></nav>
+  </footer>
+  <button class="back-to-top" type="button" aria-label="Наверх">↑</button>
+  <script src="assets/site.js?v=1"></script>
+</body>
+</html>

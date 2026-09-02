@@ -1,0 +1,17 @@
+name: Предложить улучшение
+description: Идея для новой функции или изменения интерфейса
+title: "[Предложение] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какая задача сейчас неудобна
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Предлагаемое решение
+    validations:
+      required: true
