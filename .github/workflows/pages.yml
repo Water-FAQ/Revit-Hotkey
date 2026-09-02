@@ -2,11 +2,6 @@ name: GitHub Pages
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "site/**"
-      - ".github/workflows/pages.yml"
 
 permissions:
   contents: read
@@ -26,8 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
