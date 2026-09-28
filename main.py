@@ -13,7 +13,7 @@ def set_windows_app_id() -> None:
         return
     try:
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-            "WaterFAQ.RevitHotkey.1.0.0"
+            "WaterFAQ.RevitHotkey.1.0.1"
         )
     except (AttributeError, OSError):
         pass
@@ -22,4 +22,3 @@ def set_windows_app_id() -> None:
 if __name__ == "__main__":
     set_windows_app_id()
     raise SystemExit(run())
-
