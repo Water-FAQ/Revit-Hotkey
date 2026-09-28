@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-from .keymap import canonical_shortcut
+from .keymap import canonical_shortcut, complete_shortcuts
 
 REVIT_FOLDER_RE = re.compile(r"^Autodesk Revit (20\d{2})$")
 
@@ -224,6 +224,18 @@ class ShortcutDocument:
     def reset_changes(self) -> None:
         for record in self.records:
             record.current_shortcuts = record.original_shortcuts
+
+    def complete_all_combinations(self) -> int:
+        """Add missing case/layout variants to every editable assignment."""
+        changed = 0
+        for record in self.records:
+            if record.locked or not record.shortcut_parts:
+                continue
+            completed = "#".join(complete_shortcuts(record.shortcut_parts))
+            if completed != (record.current_shortcuts or ""):
+                self.set_shortcuts(record, completed)
+                changed += 1
+        return changed
 
     def conflicts(self, combination: str, target: CommandRecord) -> list[CommandRecord]:
         wanted = canonical_shortcut(combination)

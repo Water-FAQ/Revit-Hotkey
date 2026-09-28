@@ -53,6 +53,8 @@ RU_OEM = {
     0xE2: "\\",
 }
 
+MODIFIER_NAMES = {"alt", "control", "ctrl", "meta", "shift", "win", "windows"}
+
 IGNORED_VKS = {
     VK_TAB,
     VK_RETURN,
@@ -124,6 +126,7 @@ def canonical_shortcut(value: str) -> str:
     if not value:
         return ""
     parts = value.split("+")
+    has_modifier = any(part.strip().casefold() in MODIFIER_NAMES for part in parts)
     normalized: list[str] = []
     for part in parts:
         lowered = part.strip().lower()
@@ -131,11 +134,71 @@ def canonical_shortcut(value: str) -> str:
             normalized.append("CTRL")
         elif lowered == "shift":
             normalized.append("SHIFT")
-        elif len(part.strip()) == 1 and part.strip().isascii():
+        elif lowered == "alt":
+            normalized.append("ALT")
+        elif lowered in {"meta", "win", "windows"}:
+            normalized.append("WIN")
+        elif has_modifier:
             normalized.append(part.strip().upper())
         else:
-            normalized.append(part.strip().casefold())
+            # Revit distinguishes upper- and lower-case variants for ordinary
+            # sequential shortcuts, so preserve their case.
+            normalized.append(part.strip())
     return "+".join(normalized)
+
+
+def has_modifier(value: str) -> bool:
+    """Return whether a shortcut contains a Ctrl/Shift/Alt/Windows modifier."""
+    return any(part.strip().casefold() in MODIFIER_NAMES for part in value.split("+"))
+
+
+def has_letter(value: str) -> bool:
+    """Return whether a shortcut contains at least one alphabetic character."""
+    return any(character.isalpha() for character in value)
+
+
+def _unique(values: list[str]) -> list[str]:
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        if value and value not in seen:
+            result.append(value)
+            seen.add(value)
+    return result
+
+
+def combination_variants(value: str, both_layouts: bool = True) -> list[str]:
+    """Build case and layout variants for a non-modified letter shortcut.
+
+    Modifier shortcuts and combinations without letters are returned unchanged.
+    Digits and symbols inside a letter shortcut remain part of the converted
+    physical-key sequence.
+    """
+    value = value.strip()
+    if not value or has_modifier(value) or not has_letter(value):
+        return [value] if value else []
+
+    if not both_layouts:
+        return _unique([value.upper(), value.lower()])
+
+    english = convert_combination(value, "en")
+    russian = convert_combination(english, "ru")
+    return _unique(
+        [
+            english.upper(),
+            english.lower(),
+            russian.upper(),
+            russian.lower(),
+        ]
+    )
+
+
+def complete_shortcuts(values: list[str]) -> list[str]:
+    """Complete every existing shortcut with missing layout/case variants."""
+    completed: list[str] = []
+    for value in values:
+        completed.extend(combination_variants(value, both_layouts=True))
+    return _unique(completed)
 
 
 def convert_combination(value: str, target: str) -> str:

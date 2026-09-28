@@ -64,7 +64,10 @@ from .keymap import (
     VK_ESCAPE,
     VK_MENU,
     VK_SHIFT,
+    combination_variants,
+    complete_shortcuts,
     convert_combination,
+    has_modifier,
     key_pair_from_vk,
     make_modified_pair,
 )
@@ -852,6 +855,12 @@ class MainWindow(QMainWindow):
         self.undo_button = QPushButton("Отменить изменения")
         self.undo_button.setToolTip("Вернуть все команды к состоянию на момент загрузки файла.")
         self.undo_button.clicked.connect(self.undo_changes)
+        self.complete_button = QPushButton("Дополнить")
+        self.complete_button.setToolTip(
+            "Дополнить все буквенные комбинации вариантами для русской и английской "
+            "раскладок в верхнем и нижнем регистре."
+        )
+        self.complete_button.clicked.connect(self.complete_all_combinations)
         self.save_button = QPushButton("Сохранить", objectName="success")
         self.save_button.setToolTip("Сохранить изменения в текущий файл.")
         self.save_button.clicked.connect(self.save_document)
@@ -859,6 +868,7 @@ class MainWindow(QMainWindow):
         self.save_as_button.setToolTip("Сохранить XML в выбранное место.")
         self.save_as_button.clicked.connect(self.save_document_as)
         save_row.addWidget(self.undo_button)
+        save_row.addWidget(self.complete_button)
         save_row.addStretch(1)
         save_row.addWidget(self.save_button)
         save_row.addWidget(self.save_as_button)
@@ -903,6 +913,7 @@ class MainWindow(QMainWindow):
         for widget in (
             self.search_edit,
             self.category_combo,
+            self.complete_button,
             self.save_button,
             self.save_as_button,
         ):
@@ -1042,11 +1053,23 @@ class MainWindow(QMainWindow):
             self.show_status("Системная комбинация клавиш Revit. Изменение недоступно.", "info")
             return
         parts = record.shortcut_parts
+        english = next(
+            (part for part in parts if any("a" <= char.casefold() <= "z" for char in part)),
+            parts[0] if parts else "",
+        )
+        russian = next(
+            (
+                part
+                for part in parts
+                if any(char.casefold() == "ё" or "а" <= char.casefold() <= "я" for char in part)
+            ),
+            "",
+        )
         self.both_layouts_check.blockSignals(True)
-        self.both_layouts_check.setChecked(len(parts) >= 2 or not parts)
+        self.both_layouts_check.setChecked(bool(russian) or not parts)
         self.both_layouts_check.blockSignals(False)
-        self.english_edit.setText(parts[0] if parts else "")
-        self.russian_edit.setText(parts[1] if len(parts) >= 2 else "")
+        self.english_edit.setText(english)
+        self.russian_edit.setText(russian)
         self._set_editor_enabled(True)
 
     def _clear_editor(self) -> None:
@@ -1063,7 +1086,9 @@ class MainWindow(QMainWindow):
 
     def _pair_captured(self, english: str, russian: str) -> None:
         self.english_edit.setText(english)
-        if self.both_layouts_check.isChecked() and english != russian:
+        if has_modifier(english):
+            self.russian_edit.clear()
+        elif self.both_layouts_check.isChecked() and english != russian:
             self.russian_edit.setText(russian)
         else:
             self.russian_edit.clear()
@@ -1079,7 +1104,9 @@ class MainWindow(QMainWindow):
         if checked:
             english = self.english_edit.text().strip()
             russian = self.russian_edit.text().strip()
-            if english and not russian:
+            if english and has_modifier(english):
+                self.russian_edit.clear()
+            elif english and not russian:
                 converted = convert_combination(english, "ru")
                 if converted != english:
                     self.russian_edit.setText(converted)
@@ -1098,7 +1125,12 @@ class MainWindow(QMainWindow):
         if not english and not russian:
             self.show_status("Введите комбинацию клавиш.", "warning")
             return
-        combinations = [value for value in (english, russian) if value]
+        if self.both_layouts_check.isChecked():
+            combinations = complete_shortcuts(
+                [value for value in (english, russian) if value]
+            )
+        else:
+            combinations = combination_variants(english, both_layouts=False)
         for combination in combinations:
             owner = self.document.reserved_owner(combination)
             if owner:
@@ -1121,10 +1153,7 @@ class MainWindow(QMainWindow):
             for combination in values:
                 self.document.remove_combination(record, combination)
 
-        value = english
-        if russian and russian != english:
-            value = f"{english}#{russian}" if english else russian
-        self.document.set_shortcuts(self.selected_record, value)
+        self.document.set_shortcuts(self.selected_record, "#".join(combinations))
         self._refresh_after_change("Комбинация клавиш назначена.")
 
     def _confirm_replace(self, conflicts: dict[CommandRecord, list[str]]) -> bool:
@@ -1192,6 +1221,16 @@ class MainWindow(QMainWindow):
         self._restore_editor()
         self._update_counts()
         self.show_status("Все изменения отменены.", "success")
+
+    def complete_all_combinations(self) -> None:
+        if not self.document:
+            return
+        changed = self.document.complete_all_combinations()
+        if not changed:
+            self.show_status("Все комбинации уже дополнены.", "info")
+            return
+        self._refresh_after_change(f"Комбинации дополнены: изменено команд — {changed}.")
+        self._restore_editor()
 
     def save_document(self) -> bool:
         if not self.document:
@@ -1262,9 +1301,10 @@ class MainWindow(QMainWindow):
         self.table_model.refresh()
         self.undo_button.setEnabled(False)
         self._update_counts()
-        message = "Файл успешно сохранён."
-        if self.document.is_revit_file:
-            message += " Для применения изменений рекомендуется перезапустить соответствующую версию Revit."
+        message = (
+            "Файл успешно сохранён. Если изменения не применились автоматически, "
+            "импортируйте сохранённый файл горячих клавиш в Revit вручную."
+        )
         if backup:
             message += f" Резервная копия: {backup.name}."
         self.show_status(message, "success")
