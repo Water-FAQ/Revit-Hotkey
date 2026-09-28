@@ -62,6 +62,14 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(owner, "Сохранить")
         self.assertEqual(doc.reserved_owner("Shift+W"), "Динамический вид")
 
+    def test_complete_all_combinations_updates_only_letter_assignments(self):
+        doc = ShortcutDocument.load(self.path)
+        changed = doc.complete_all_combinations()
+        self.assertEqual(changed, 1)
+        self.assertEqual(doc.records[0].current_shortcuts, "45")
+        self.assertEqual(doc.records[1].current_shortcuts, "LH#lh#ДР#др")
+        self.assertEqual(doc.records[-1].current_shortcuts, None)
+
     def test_delete_removes_attribute_and_save_is_valid(self):
         doc = ShortcutDocument.load(self.path)
         doc.set_shortcuts(doc.records[0], None)
